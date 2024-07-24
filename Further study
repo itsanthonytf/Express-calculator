@@ -1,0 +1,44 @@
+app.get('/all', async (req, res) => {
+    const data1 = await operation1();
+    const data2 = await operation2();
+    const data3 = await operation3();
+
+    res.json({ data1, data2, data3 });
+});
+
+const express = require('express');
+const fs = require('fs');
+const app = express();
+const port = 3000;
+
+app.get('/median', (req, res) => {
+  const { nums, save } = req.query;
+
+  if (save === 'true') {
+    const result = calculateMedian(nums);
+    const timestamp = new Date().toISOString();
+    const data = { result, timestamp };
+
+    fs.writeFile('results.json', JSON.stringify(data), (err) => {
+      if (err) throw err;
+      console.log('Data saved to results.json');
+    });
+  }
+
+  const acceptHeader = req.get('Accept');
+  if (acceptHeader === 'application/json') {
+    res.json({ message: 'Operation successful' });
+  } else if (acceptHeader === 'text/html') {
+    res.send('<h1>Operation successful</h1>');
+  } else {
+    res.status(406).send('Not Acceptable');
+  }
+});
+
+function calculateMedian(nums) {
+  // Calculate median logic here
+}
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
